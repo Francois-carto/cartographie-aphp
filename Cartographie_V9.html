@@ -289,6 +289,11 @@ De&nbsp;:
   <option value="AP-HP. Hôpitaux Universitaires Henri-Mondor">Henri-Mondor</option>
   <option value="AP-HP. Hôpitaux Universitaires Paris Seine-Saint-Denis">Paris Seine-Saint-Denis</option>
 </select>
+<button
+  id="btnResetGHU"
+  onclick="resetFiltreGHU()"
+  style="display:none; margin-left:6px; padding:4px 10px; font-size:13px; background:#e53935; color:white; border:none; border-radius:4px; cursor:pointer;"
+>✕ Effacer le filtre GHU</button>
 <style>
 #searchResults {
   position: absolute;
@@ -1207,7 +1212,9 @@ document.getElementById("typeFilter").addEventListener("change", () => {
 });
 // Écouteur filtre GHU
 document.getElementById("ghuFilter").addEventListener("change", () => {
-  filtreGHU = ""; // dès qu'on choisit dans le menu, on désactive le filtre démarrage
+  filtreGHU = "";
+  const ghuVal = document.getElementById("ghuFilter").value;
+  document.getElementById("btnResetGHU").style.display = ghuVal !== "" ? "inline-block" : "none";
   updateMap(parseInt(sliderStart.value), parseInt(slider.value));
 });
 // Curseur de fin → met à jour le champ texte
@@ -1354,6 +1361,13 @@ function openImageOverlay(src, alt) {
 function closeImageOverlay() {
   document.getElementById("imageOverlay").style.display = "none";
 }
+function resetFiltreGHU() {
+  document.getElementById("ghuFilter").value = "";
+  document.getElementById("btnResetGHU").style.display = "none";
+  filtreGHU = "__avec_groupe__";
+  updateMap(parseInt(sliderStart.value), parseInt(slider.value));
+}
+
 function zoomEtAfficher(nomEtab) {
   // Trouver l'établissement dans la liste
   const etab = etablissements.find(e => e.nom === nomEtab);
