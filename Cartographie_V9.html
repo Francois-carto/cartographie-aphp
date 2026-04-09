@@ -294,6 +294,11 @@ De&nbsp;:
   onclick="resetFiltreGHU()"
   style="display:none; margin-left:6px; padding:4px 10px; font-size:13px; background:#e53935; color:white; border:none; border-radius:4px; cursor:pointer;"
 >✕ Effacer le filtre GHU</button>
+<button
+  id="btnToutAfficher"
+  onclick="toutAfficher()"
+  style="margin-left:6px; padding:4px 10px; font-size:13px; background:#2E7D32; color:white; border:none; border-radius:4px; cursor:pointer;"
+>👁 Voir tous les établissements</button>
 <style>
 #searchResults {
   position: absolute;
@@ -459,6 +464,7 @@ De&nbsp;:
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script>
+const ANNEE_COURANTE = new Date().getFullYear();
 function normalize(str) {
   return str
     .toLowerCase()
@@ -1215,7 +1221,15 @@ document.getElementById("ghuFilter").addEventListener("change", () => {
   filtreGHU = "";
   const ghuVal = document.getElementById("ghuFilter").value;
   document.getElementById("btnResetGHU").style.display = ghuVal !== "" ? "inline-block" : "none";
-  updateMap(parseInt(sliderStart.value), parseInt(slider.value));
+  if (ghuVal !== "") {
+    document.getElementById("yearStart").value = ANNEE_COURANTE;
+    document.getElementById("labelStart").value = ANNEE_COURANTE;
+    document.getElementById("yearSlider").value = ANNEE_COURANTE;
+    document.getElementById("yearLabel").value = ANNEE_COURANTE;
+    updateMap(ANNEE_COURANTE, ANNEE_COURANTE);
+  } else {
+    updateMap(parseInt(sliderStart.value), parseInt(slider.value));
+  }
 });
 // Curseur de fin → met à jour le champ texte
 slider.addEventListener("input", () => {
@@ -1257,7 +1271,11 @@ labelStart.addEventListener("change", () => {
 
 /* Initialisation — affiche uniquement les ets avec GHU au démarrage */
 filtreGHU = "__avec_groupe__";
-updateMap(parseInt(sliderStart.value), parseInt(slider.value));
+document.getElementById("yearStart").value = ANNEE_COURANTE;
+document.getElementById("labelStart").value = ANNEE_COURANTE;
+document.getElementById("yearSlider").value = ANNEE_COURANTE;
+document.getElementById("yearLabel").value = ANNEE_COURANTE;
+updateMap(ANNEE_COURANTE, ANNEE_COURANTE);
 const searchInput = document.getElementById("searchInput");
 const searchResults = document.getElementById("searchResults");
 
@@ -1360,6 +1378,25 @@ function openImageOverlay(src, alt) {
 
 function closeImageOverlay() {
   document.getElementById("imageOverlay").style.display = "none";
+}
+function toutAfficher() {
+  // Réinitialise les filtres GHU et statut
+  filtreGHU = "";
+  filtreStatut = null;
+  document.getElementById("ghuFilter").value = "";
+  document.getElementById("typeFilter").value = "";
+  document.getElementById("btnResetGHU").style.display = "none";
+  // Réinitialise la légende cliquable
+  ["leg-actif","leg-ferme","leg-detruit"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.background = ""; el.style.outline = ""; }
+  });
+  // Relance la carte avec les curseurs tels quels
+document.getElementById("yearStart").value = 829;
+document.getElementById("labelStart").value = 829;
+document.getElementById("yearSlider").value = ANNEE_COURANTE;
+document.getElementById("yearLabel").value = ANNEE_COURANTE;
+updateMap(829, ANNEE_COURANTE);
 }
 function resetFiltreGHU() {
   document.getElementById("ghuFilter").value = "";
